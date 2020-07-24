@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+from random import randint
 
 class alter():
     def __init__(self, imagePath):
@@ -17,8 +18,16 @@ class alter():
         cv2.imwrite(outfile,result)
 
     def affineTrans(self, outfile):
-        pass
+        rows,cols,ch = self.img.shape
+        # pts1 = np.float32([[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)]])
+        # pts2 = np.float32([[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)]])
+        pts1 = np.float32([[50,50],[200,50],[50,200]])
+        pts2 = np.float32([[10,100],[200,50],[100,250]])
+        M = cv2.getAffineTransform(pts1,pts2)
 
+        result = cv2.warpAffine(self.img,M,(cols,rows))
+
+        cv2.imwrite(outfile,result)
 
     def overlay(self, outfile, topImgPath='./hurr.png'):
         topImg = cv2.imread(topImgPath, -1)
@@ -71,5 +80,6 @@ if __name__ == "__main__":
     ins.rotate(25,'rotate.png')
     ins.overlay('o.png')
     ins.scale('s.png')
+    ins.affineTrans('x.png')
 
 
