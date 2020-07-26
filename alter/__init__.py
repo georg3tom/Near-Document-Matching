@@ -1,85 +1,161 @@
+"""
+Makes changes to an image
+"""
+
+from copy import deepcopy
+from random import randint
+import os
+
 import numpy as np
 import cv2
-from random import randint
 
-class alter():
-    def __init__(self, imagePath):
-        self.imagePath = imagePath
-        self.img = cv2.imread(self.imagePath)
+from errors import ImageNotFoundError, InvalidImageError
 
-    def rotate(self, angle, outfile):
-        image_center = tuple(np.array(self.img.shape[1::-1]) / 2)
-        rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-        result = cv2.warpAffine(self.img, rot_mat, self.img.shape[1::-1], flags=cv2.INTER_LINEAR)
-        cv2.imwrite(outfile,result)
-    
-    def scale(self, outfile, fx=0.5, fy=0.5):
-        result = cv2.resize(self.img, None, fx=fx, fy=fy, interpolation = cv2.INTER_CUBIC)
-        cv2.imwrite(outfile,result)
 
-    def affineTrans(self, outfile):
-        rows,cols,ch = self.img.shape
+class Alter:
+    """
+    Used to introduce some variations in an image
+    """
+
+    def __init__(self, img_path):
+        self.img_path = img_path
+
+        filename = os.path.basename(img_path)
+        name, ext = os.path.splitext(filename)
+
+        self.edits = [name]
+        self.ext = ext
+
+        self.img = self.imread(img_path)
+
+    @staticmethod
+    def imread(img_path):
+        """
+        Raises exception if file doesn't exist or is invalid
+        Returns the image if valid
+        """
+        if not os.path.exists(img_path):
+            raise ImageNotFoundError(f"Image {img_path} could'nt be located")
+
+        img = cv2.imread(img_path)
+
+        if img is None:
+            raise InvalidImageError(f"Image {img_path} could'nt be loaded")
+
+        return img
+
+    def rotate(self, angle):
+        """
+        Rotates image by angle
+        """
+        image_center = np.array(self.img.shape[1::-1]) / 2
+        rot_mat = cv2.getRotationMatrix2D(tuple(image_center), angle, 1.0)
+
+        self.img = cv2.warpAffine(
+            self.img, rot_mat, self.img.shape[1::-1], flags=cv2.INTER_LINEAR
+        )
+
+        self.edits.append(f"rotate:{angle}")
+        return self
+
+    def scale(self, fx=0.5, fy=0.5):
+        """
+        Scales the image
+        """
+        self.img = cv2.resize(
+            self.img, None, fx=fx, fy=fy, interpolation=cv2.INTER_CUBIC
+        )
+
+        self.edits.append(f"scale:{fx}x{fy}")
+        return self
+
+    def affine_trans(self):
+        """
+        Applies some affine transformation to the image
+        """
+        h, w, c = self.img.shape
+
         # pts1 = np.float32([[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)]])
         # pts2 = np.float32([[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)]])
-        pts1 = np.float32([[50,50],[200,50],[50,200]])
-        pts2 = np.float32([[10,100],[200,50],[100,250]])
-        M = cv2.getAffineTransform(pts1,pts2)
+        pts1 = np.float32([[50, 50], [200, 50], [50, 200]])
+        pts2 = np.float32([[10, 100], [200, 50], [100, 250]])
 
-        result = cv2.warpAffine(self.img,M,(cols,rows))
+        M = cv2.getAffineTransform(pts1, pts2)
 
-        cv2.imwrite(outfile,result)
+        self.img = cv2.warpAffine(self.img, M, (w, h))
 
-    def overlay(self, outfile, topImgPath='./hurr.png'):
-        topImg = cv2.imread(topImgPath, -1)
-        print(topImg.shape)
-        print(self.img.shape)
-        # topImg = cv2.resize(topImg, (self.img.shape[1], self.img.shape[0]))
-        # result = cv2.addWeighted(self.img, 0.5, topImg, 0.5, 0)
-        result = self.overlay_transparent(self.img.copy(), topImg, 0, 0)
-        cv2.imwrite(outfile, result)
+        self.edits.append("affine")
+        return self
 
-    def overlay_transparent(self, background, overlay, x, y):
+    @staticmethod
+    def overlay_transparent(bg_img, overlay_img, x, y):
         """
+        Puts an image on top of another
         used by overlay function
         """
-        background_width = background.shape[1]
-        background_height = background.shape[0]
+        bg_h, bg_w = bg_img.shape[:2]
 
-        if x >= background_width or y >= background_height:
-            return background
+        if x >= bg_w or y >= bg_h:
+            return bg_img
 
-        h, w = overlay.shape[0], overlay.shape[1]
+        h, w = overlay_img.shape[:2]
 
-        if x + w > background_width:
-            w = background_width - x
-            overlay = overlay[:, :w]
+        if x + w > bg_w:
+            w = bg_w - x
+            overlay_img = overlay_img[:, :w]
 
-        if y + h > background_height:
-            h = background_height - y
-            overlay = overlay[:h]
+        if y + h > bg_h:
+            h = bg_h - y
+            overlay_img = overlay_img[:h]
 
-        if overlay.shape[2] < 4:
-            overlay = np.concatenate(
+        if overlay_img.shape[2] < 4:
+            overlay_img = np.concatenate(
                 [
-                    overlay,
-                    np.ones((overlay.shape[0], overlay.shape[1], 1), dtype = overlay.dtype) * 255
+                    overlay_img,
+                    np.ones((*overlay_img.shape[:2], 1), dtype=overlay_img.dtype) * 255,
                 ],
-                axis = 2,
+                axis=2,
             )
 
-        overlay_image = overlay[..., :3]
-        mask = overlay[..., 3:] / 255.0
+        overlay = overlay_img[..., :3]
+        mask = overlay_img[..., 3:] / 255.0
 
-        background[y:y+h, x:x+w] = (1.0 - mask) * background[y:y+h, x:x+w] + mask * overlay_image
+        ret = bg_img.copy()
 
-        return background
+        ret[y : y + h, x : x + w] = (1.0 - mask) * ret[
+            y : y + h, x : x + w
+        ] + mask * overlay
+
+        return ret
+
+    def overlay(self, img2_path="./hurr.png"):
+        """
+        Puts img2 on top of current image
+        """
+        img2 = self.imread(img2_path)
+
+        self.img = self.overlay_transparent(self.img, img2, 0, 0)
+
+        self.edits.append(f"overlay:{os.path.basename(img2_path)}")
+        return self
+
+    def copy(self):
+        """
+        Returns a copy of this
+        """
+        return deepcopy(self)
+
+    def write(self, name=None, ext=None):
+        """
+        Writes the image to disk
+        """
+        if name is None:
+            name = "-".join(self.edits)
+        if ext is None:
+            ext = self.ext
+
+        cv2.imwrite(name + ext, self.img)
 
 
 if __name__ == "__main__":
-    ins = alter('./outputname-1.png')
-    ins.rotate(25,'rotate.png')
-    ins.overlay('o.png')
-    ins.scale('s.png')
-    ins.affineTrans('x.png')
-
-
+    Alter("./inp.jpg").rotate(25).overlay().scale().affine_trans().write()
