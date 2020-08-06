@@ -9,7 +9,7 @@ import os
 import numpy as np
 import cv2
 
-from errors import ImageNotFoundError, InvalidImageError
+from .errors import ImageNotFoundError, InvalidImageError
 
 
 class Alter:
