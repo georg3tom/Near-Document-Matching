@@ -16,19 +16,19 @@ if __name__ == "__main__":
 
     for f in files:
         altr = Alter(join(src,f))
-        altr.rotate(randint(5,25)).write(join(out,splitext(f)[0]+"-r"))
+        altr.rotate(randint(5,25)).write(directory=out)
         altr = Alter(join(src,f))
-        altr.overlay().write(join(out,splitext(f)[0]+"-o"))
+        altr.overlay().write(directory=out)
         altr = Alter(join(src,f))
-        altr.scale().write(join(out,splitext(f)[0]+"-s"))
+        altr.scale().write(directory=out)
         altr = Alter(join(src,f))
-        altr.affine_trans().write(join(out,splitext(f)[0]+"-at"))
+        altr.affine_trans().write(directory=out)
 
         altr = Alter(join(src,f))
         altr.rotate(randint(5,25))
-        altr.scale().write(join(out,splitext(f)[0]+"-r-s"))
-        altr.overlay().write(join(out,splitext(f)[0]+"-r-s-o"))
-        altr.affine_trans().write(join(out,splitext(f)[0]+"r-s-o-at"))
+        altr.scale().write(directory=out)
+        altr.overlay().write(directory=out)
+        altr.affine_trans().write(directory=out)
 
 
 

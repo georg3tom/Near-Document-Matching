@@ -145,12 +145,14 @@ class Alter:
         """
         return deepcopy(self)
 
-    def write(self, name=None, ext=None):
+    def write(self, name=None, ext=None, directory=None):
         """
         Writes the image to disk
         """
         if name is None:
             name = "-".join(self.edits)
+        if directory is not None:
+            name = os.path.join(directory, name)
         if ext is None:
             ext = self.ext
 
