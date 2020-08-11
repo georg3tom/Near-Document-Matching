@@ -18,9 +18,10 @@ class LSHIndex():
 		self.index.add(self.vectors)
 		
 	def query(self, vectors, k=10):
+		k = int(min(k, self.labels.shape[0]))
+		vectors = vectors.astype('float32')
 		distances, indices = self.index.search(vectors, k) 
-		# I expect only query on one vector thus the slice
-		return [self.labels[i] for i in indices[0]]
+		return self.labels[np.array(indices)]
 
 
 if __name__ == '__main__':

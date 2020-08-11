@@ -4,7 +4,7 @@ Returns the no of black pixels
 
 import cv2
 import numpy as np
-from histogram import histogram
+from .histogram import histogram
 
 
 def black(img):
@@ -15,7 +15,7 @@ def black(img):
     rang = 10
     hist = histogram(img)
 
-    return int(np.sum(hist[:rang, :]))
+    return np.array([int(np.sum(hist[:rang, :]))])
 
 
 if __name__ == "__main__":
