@@ -1,1 +1,1 @@
-from .Alter import Alter
+from .alter import Alter

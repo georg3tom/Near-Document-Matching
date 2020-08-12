@@ -1,18 +1,19 @@
+import os
+
 import cv2
 import numpy as np
-import os
 
 from neigh_search import Lsh
 from feat_extraction import FeatureExtractor
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     labels = []
     vectors = []
 
-    for image in os.listdir('./data'):
-        filename = './data/' + image
+    for image in os.listdir("./data"):
+        filename = "./data/" + image
         img = cv2.imread(filename)
-        labels.append(image.split('.')[0])
+        labels.append(image.split(".")[0])
         vectors.append(np.resize(FeatureExtractor(img), 100))
 
     labels = np.array(labels)

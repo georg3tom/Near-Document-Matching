@@ -13,7 +13,7 @@ def sift(img):
     """
 
     sift = cv2.xfeatures2d.SIFT_create()
-    kp, des = sift.detectAndCompute(img, None) 
+    kp, des = sift.detectAndCompute(img, None)
 
     return des
 
@@ -22,4 +22,3 @@ if __name__ == "__main__":
     img = cv2.imread("./test.png")
     h = sift(img)
     print(h.shape)
-
