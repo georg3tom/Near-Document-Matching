@@ -12,12 +12,14 @@ imgPath = "./data_gen/output/"
 
 for image in os.listdir(imgPath):
     filename = imgPath + image
-    print(filename)
+    # print(filename)
     img = cv2.imread(filename)
     labels.append(image.split(".")[0])
-    vectors.append(FeatureExtractor(img).get_features(), 100)
+    vectors.append(FeatureExtractor(img).get_features())
 
 labels = np.array(labels)
+print(labels.dtype)
+labels.tofile('labels')
 vectors = np.array(vectors)
 print(vectors.shape)
 
