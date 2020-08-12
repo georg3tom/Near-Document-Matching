@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 from neigh_search import LSH
-from feat_extraction import FeatureExtractor
+from feat_extract import FeatureExtractor
 
 labels = []
 vectors = []
