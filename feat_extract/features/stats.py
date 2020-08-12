@@ -19,7 +19,7 @@ def stats(img):
 
     features = []
 
-    for c in range(3):
+    for c in range(img.shape[-1]):
         img_slice = img[:, :, c].ravel()
 
         features.append(np.mean(img_slice))
