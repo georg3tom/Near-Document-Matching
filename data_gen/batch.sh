@@ -14,4 +14,4 @@ do
     echo $pdfPath$i
 done
 
-python3 data-gen.py
+python3 data_gen.py
