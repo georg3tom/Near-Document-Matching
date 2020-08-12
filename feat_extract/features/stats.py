@@ -17,14 +17,14 @@ def stats(img):
     # fail on non-rgb type images
     assert img.shape[-1] == 3
 
-    features = []
+    features = np.array([])
 
     for c in range(img.shape[-1]):
         img_slice = img[:, :, c].ravel()
 
-        features.append(np.mean(img_slice))
-        features.append(np.var(img_slice))
-        features.append(np.median(img_slice))
+        np.append(features, np.mean(img_slice))
+        np.append(features, np.var(img_slice))
+        np.append(features, np.median(img_slice))
 
     return features
 

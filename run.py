@@ -8,12 +8,14 @@ from feat_extract import FeatureExtractor
 
 labels = []
 vectors = []
+imgPath = "./data_gen/output/"
 
-for image in os.listdir("./data"):
-    filename = "./data/" + image
+for image in os.listdir(imgPath):
+    filename = imgPath + image
+    print(filename)
     img = cv2.imread(filename)
     labels.append(image.split(".")[0])
-    vectors.append(np.resize(FeatureExtractor(img).get_features(), 100))
+    vectors.append(FeatureExtractor(img).get_features(), 100)
 
 labels = np.array(labels)
 vectors = np.array(vectors)
@@ -21,7 +23,7 @@ print(vectors.shape)
 
 lsh = LSH(vectors, labels)
 lsh.build()
-lsh.write("index")
+lsh.write("./index")
 
 knns = lsh.query(vectors)
 print(knns)

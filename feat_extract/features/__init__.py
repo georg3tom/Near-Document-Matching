@@ -13,6 +13,7 @@ from .surf import surf
 features = [
     black,
     histogram,
+    stats,
 ]
 
 experimental_features = [
