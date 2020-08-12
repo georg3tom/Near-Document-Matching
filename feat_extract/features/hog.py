@@ -1,5 +1,5 @@
 """
-Returns the edges detected in an image
+Histogram of Oriented Gradients
 """
 
 import cv2
@@ -8,7 +8,8 @@ import numpy as np
 
 def hog(img):
     """
-    Returns the canny edges detected in the image
+    Returns the HOG descriptors for an image
+    a HUGE return, have to use wisely
     Expects an RGB image (3 channels)
     """
 
