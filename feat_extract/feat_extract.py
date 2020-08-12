@@ -32,7 +32,7 @@ class FeatureExtractor:
 
         self.features = []
 
-    def preprocess(self, do_scale, do_fix_channels):
+    def preprocess(self, do_scale=True, do_fix_channels=True):
         """
         Make all images look mostly the same
         """
