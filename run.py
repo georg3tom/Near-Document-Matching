@@ -21,6 +21,7 @@ print(vectors.shape)
 
 lsh = LSH(vectors, labels)
 lsh.build()
+lsh.write("index")
 
 knns = lsh.query(vectors)
 print(knns)

@@ -24,6 +24,8 @@ class LSHIndex:
         distances, indices = self.index.search(vectors, k)
         return self.labels[np.array(indices)]
 
+    def write(self, filename):
+        faiss.write_index(self.index, filename)
 
 if __name__ == "__main__":
     d = 64
