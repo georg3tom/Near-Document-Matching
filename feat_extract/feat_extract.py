@@ -15,33 +15,46 @@ class FeatureExtractor:
     It can calculate features after breaking the image into segments
     """
 
-    def __init__(self, img, segments=2, final_size=(300, 300)):
+    def __init__(
+        self,
+        img,
+        segments=2,
+        final_size=(300, 300),
+        preprocess_config={"do_scale": True, "do_fix_channels": True},
+        preprocess_enabled=True,
+    ):
         self.img = img
         self.segments = segments
         self.final_size = final_size
 
-        self.preprocess()
+        if preprocess_enabled:
+            self.preprocess(**preprocess_config)
+
         self.features = []
 
-    def preprocess(self):
+    def preprocess(self, do_scale, do_fix_channels):
         """
         Make all images look mostly the same
         """
-        self.img = cv2.resize(self.img, self.final_size, interpolation=cv2.INTER_CUBIC)
+        if do_scale:
+            self.img = cv2.resize(
+                self.img, self.final_size, interpolation=cv2.INTER_CUBIC
+            )
 
-        if len(self.img.shape) == 2:
-            # got a grayscale image
-            self.img = cv2.cvtColor(self.img, cv2.COLOR_GRAY2BGR)
-        else:
-            # image is "3D", might have an extra channel
-            n_channels = self.img.shape[-1]
-
-            if n_channels < 3:
-                # if shape is (x, y, 1) or something like this
-                self.img = np.dstack([self.img * (3 - n_channels)])
+        if do_fix_channels:
+            if len(self.img.shape) == 2:
+                # got a grayscale image
+                self.img = cv2.cvtColor(self.img, cv2.COLOR_GRAY2BGR)
             else:
-                # if it has a transparency channel as well
-                self.img = self.img[:, :, :3]
+                # image is "3D", might have an extra channel
+                n_channels = self.img.shape[-1]
+
+                if n_channels < 3:
+                    # if shape is (x, y, 1) or something like this
+                    self.img = np.dstack([self.img * (3 - n_channels)])
+                else:
+                    # if it has a transparency channel as well
+                    self.img = self.img[:, :, :3]
 
     def break_blocks(self):
         """
