@@ -15,9 +15,10 @@ class FeatureExtractor:
     It can calculate features after breaking the image into segments
     """
 
-    def __init__(self, img, segments=2):
+    def __init__(self, img, segments=2, final_size=(300, 300)):
         self.img = img
         self.segments = segments
+        self.final_size = final_size
 
         self.preprocess()
         self.features = []
@@ -26,7 +27,7 @@ class FeatureExtractor:
         """
         Make all images look mostly the same
         """
-        self.img = cv2.resize(self.img, (900, 900), interpolation=cv2.INTER_AREA)
+        self.img = cv2.resize(self.img, self.final_size, interpolation=cv2.INTER_CUBIC)
 
         if len(self.img.shape) == 2:
             # got a grayscale image
@@ -46,7 +47,6 @@ class FeatureExtractor:
         """
         Breaks an image into the specified number of segments
         """
-
         # a turn-off switch of sorts
         if self.segments <= 1:
             return [self.img]
