@@ -103,3 +103,19 @@ class FeatureExtractor:
                     feature_vector = np.hstack([feature_vector, feature(block).ravel()])
 
         return feature_vector
+
+    def get_features2(self):
+        """
+        Extracts all the features
+        """
+        blocks = self.break_blocks()
+        feature_vector = np.zeros((0))
+
+        x = self.img.shape[0] // self.segments
+        y = self.img.shape[1] // self.segments
+        
+        for block in blocks:
+            for feature in features:
+                feature_vector = np.hstack([feature_vector, feature(block).ravel()])
+
+        return feature_vector
