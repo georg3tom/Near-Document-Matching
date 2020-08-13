@@ -20,6 +20,10 @@ class FeatureExtractor:
         img,
         segments=2,
         final_size=(300, 300),
+        self.window = {
+            "h" : 4,
+            "w" : 4,
+            }
         preprocess_config={"do_scale": True, "do_fix_channels": True},
         preprocess_enabled=True,
     ):
@@ -86,9 +90,30 @@ class FeatureExtractor:
         """
         Extracts all the features
         """
+        # blocks = self.break_blocks()
+        feature_vector = np.zeros((0))
+
+        x = self.img.shape[0] // self.segments
+        y = self.img.shape[1] // self.segments
+        
+        for i in range(0, x - self.window["h"]):
+            for j in range(0, y - self.window["w"]):
+                block = self.img[i: i+self, window["h"],j:j+self.window["w"], :]
+                for feature in features:
+                    feature_vector = np.hstack([feature_vector, feature(block).ravel()])
+
+        return feature_vector
+
+    def get_features2(self):
+        """
+        Extracts all the features
+        """
         blocks = self.break_blocks()
         feature_vector = np.zeros((0))
 
+        x = self.img.shape[0] // self.segments
+        y = self.img.shape[1] // self.segments
+        
         for block in blocks:
             for feature in features:
                 feature_vector = np.hstack([feature_vector, feature(block).ravel()])
