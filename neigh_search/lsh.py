@@ -25,7 +25,7 @@ class LSHIndex:
         return self.labels[np.array(indices)]
 
     def write(self, indexName, labelName):
-        faiss.write_index(self.index, filename)
+        faiss.write_index(self.index, indexName)
         np.tofile(self.labels,labelName)
 
 if __name__ == "__main__":
