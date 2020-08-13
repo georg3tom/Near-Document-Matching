@@ -20,14 +20,12 @@ class FeatureExtractor:
         img,
         segments=2,
         final_size=(300, 300),
-        self.window = {
-            "h" : 4,
-            "w" : 4,
-            }
         preprocess_config={"do_scale": True, "do_fix_channels": True},
         preprocess_enabled=True,
+        self.window = { "h" : 4, "w" : 4, },
     ):
         self.img = img
+        self.window = window
         self.segments = segments
         self.final_size = final_size
 
@@ -98,7 +96,7 @@ class FeatureExtractor:
         
         for i in range(0, x - self.window["h"]):
             for j in range(0, y - self.window["w"]):
-                block = self.img[i: i+self, window["h"],j:j+self.window["w"], :]
+                block = self.img[i: i+self.window["h"],j:j+self.window["w"], :]
                 for feature in features:
                     feature_vector = np.hstack([feature_vector, feature(block).ravel()])
 
