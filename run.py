@@ -18,14 +18,11 @@ for image in os.listdir(imgPath):
     vectors.append(FeatureExtractor(img).get_features())
 
 labels = np.array(labels)
-print(labels.dtype)
-labels.tofile('labels')
 vectors = np.array(vectors)
-print(vectors.shape)
 
 lsh = LSH(vectors, labels)
 lsh.build()
-lsh.write("./index")
+lsh.write("./index","./labels")
 
 knns = lsh.query(vectors)
 print(knns)
