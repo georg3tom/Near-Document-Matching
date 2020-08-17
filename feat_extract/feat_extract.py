@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 from .features import features
 
-DEBUG = bool(os.getenv("DEBUG", False))
+DEBUG = bool(os.getenv("DEBUG"))
 
 
 class FeatureExtractor:
