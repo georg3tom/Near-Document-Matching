@@ -108,7 +108,9 @@ class FeatureExtractor:
             self.log(f"\033[FBlock {b}")
             for feature in features:
                 self.log(f"> {feature.__name__}" + " " * 10, end="\r")
-                feature_vector.append(feature(block).ravel())
+                f = feature(block)
+                if f is not None:
+                    feature_vector.append(f.ravel())
 
         self.log("\n<< get_features")
         return np.hstack(feature_vector)
