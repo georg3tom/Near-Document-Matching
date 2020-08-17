@@ -110,7 +110,7 @@ class FeatureExtractor:
                 self.log(f"> {feature.__name__}" + " " * 10, end="\r")
                 feature_vector.append(feature(block).ravel())
 
-        self.log("<< get_features")
+        self.log("\n<< get_features")
         return np.hstack(feature_vector)
 
     @staticmethod
