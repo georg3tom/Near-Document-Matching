@@ -26,7 +26,8 @@ class LSHIndex:
 
     def write(self, indexName, labelName):
         faiss.write_index(self.index, indexName)
-        np.tofile(self.labels,labelName)
+        self.labels.tofile(labelName)
+
 
 if __name__ == "__main__":
     d = 64

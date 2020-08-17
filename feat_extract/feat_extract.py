@@ -2,9 +2,13 @@
 gets an image, returns all extracted features
 """
 
+import os
+
 import cv2
 import numpy as np
 from .features import features
+
+DEBUG = bool(os.getenv("DEBUG", False))
 
 
 class FeatureExtractor:
@@ -18,15 +22,15 @@ class FeatureExtractor:
     def __init__(
         self,
         img,
-        segments=2,
         final_size=(300, 300),
         preprocess_config={"do_scale": True, "do_fix_channels": True},
         preprocess_enabled=True,
-        self.window = { "h" : 4, "w" : 4, },
+        window_size={"h": 4, "w": 4},
+        window_stride={"h": 4, "w": 4},
     ):
         self.img = img
-        self.window = window
-        self.segments = segments
+        self.window_size = window_size
+        self.window_stride = window_stride
         self.final_size = final_size
 
         if preprocess_enabled:
@@ -38,12 +42,16 @@ class FeatureExtractor:
         """
         Make all images look mostly the same
         """
+        self.log(">> preprocess")
+
         if do_scale:
             self.img = cv2.resize(
                 self.img, self.final_size, interpolation=cv2.INTER_CUBIC
             )
+            self.log(f"Resized image to {self.img.shape}")
 
         if do_fix_channels:
+            self.log(f"Checking and fixing channels")
             if len(self.img.shape) == 2:
                 # got a grayscale image
                 self.img = cv2.cvtColor(self.img, cv2.COLOR_GRAY2BGR)
@@ -58,62 +66,58 @@ class FeatureExtractor:
                     # if it has a transparency channel as well
                     self.img = self.img[:, :, :3]
 
+        self.log("<< preprocess")
+
     def break_blocks(self):
         """
-        Breaks an image into the specified number of segments
+        Breaks an image into blocks defined by window_size and window_stride
         """
+        self.log(">> break_blocks")
         # a turn-off switch of sorts
-        if self.segments <= 1:
+        if self.window_size is None or self.window_stride is None:
             return [self.img]
-
-        x = self.img.shape[0] // self.segments
-        y = self.img.shape[1] // self.segments
 
         blocks = []
 
-        for i in range(0, self.segments - 1):
-            for j in range(0, self.segments - 1):
-                blocks.append(self.img[i * x : (i + 1) * x, j * y : (j + 1) * y, :])
+        h, w = self.img.shape[:2]
 
-            blocks.append(self.img[i * x : (i + 1) * x, (self.segments - 1) * y :, :])
+        for i in range(0, h - self.window_size["h"], self.window_stride["h"]):
+            for j in range(0, w - self.window_size["w"], self.window_stride["w"]):
+                blocks.append(
+                    self.img[
+                        i : i + self.window_size["h"], j : j + self.window_size["w"], :
+                    ]
+                )
 
-        for j in range(0, self.segments - 1):
-            blocks.append(self.img[(self.segments - 1) * x :, j * y : (j + 1) * y, :])
-
-        blocks.append(self.img[(self.segments - 1) * x :, (self.segments - 1) * y :, :])
-
+        self.log("<< break_blocks")
         return blocks
 
     def get_features(self):
         """
         Extracts all the features
         """
-        # blocks = self.break_blocks()
-        feature_vector = np.zeros((0))
-
-        x = self.img.shape[0] // self.segments
-        y = self.img.shape[1] // self.segments
-        
-        for i in range(0, x - self.window["h"]):
-            for j in range(0, y - self.window["w"]):
-                block = self.img[i: i+self.window["h"],j:j+self.window["w"], :]
-                for feature in features:
-                    feature_vector = np.hstack([feature_vector, feature(block).ravel()])
-
-        return feature_vector
-
-    def get_features2(self):
-        """
-        Extracts all the features
-        """
+        self.log(">> get_features")
         blocks = self.break_blocks()
-        feature_vector = np.zeros((0))
 
-        x = self.img.shape[0] // self.segments
-        y = self.img.shape[1] // self.segments
-        
-        for block in blocks:
+        self.log(f"Image broken into {len(blocks)} blocks")
+        self.log()
+
+        feature_vector = []
+
+        for b, block in enumerate(blocks):
+            self.log(f"\033[FBlock {b}")
             for feature in features:
-                feature_vector = np.hstack([feature_vector, feature(block).ravel()])
+                self.log(f"> {feature.__name__}" + " " * 10, end="\r")
+                feature_vector.append(feature(block).ravel())
 
-        return feature_vector
+        self.log("<< get_features")
+        return np.hstack(feature_vector)
+
+    @staticmethod
+    def log(*args, **kwargs):
+        """
+        Prints stuff on the screen if logging is enabled
+        Logging can be enabled by setting DEBUG environment variable
+        """
+        if DEBUG:
+            print(*args, **kwargs)
