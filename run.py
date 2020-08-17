@@ -15,7 +15,13 @@ imgPath = "./data/"
 
 l = Logger()
 
-for image in os.listdir(imgPath):
+images = os.listdir(imgPath)
+total = len(images)
+time_taken = 0
+
+for i, image in enumerate(images):
+    l.log("\033[2J\033[0;0H")
+    l.log(f"Image {i+1} of {total}")
     filename = imgPath + image
     l.log(f"reading {filename}")
     img = cv2.imread(filename)
@@ -24,7 +30,9 @@ for image in os.listdir(imgPath):
     st = time.time()
     vectors.append(FeatureExtractor(img).get_features())
     en = time.time()
-    l.log(f"done, took {en - st}")
+    l.log(f"done, took {en - st:.2}s")
+    time_taken += en - st
+    l.log(f"Total: {time_taken:.2}s")
 
 labels = np.array(labels)
 vectors = np.array(vectors)
