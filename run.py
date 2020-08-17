@@ -22,7 +22,7 @@ for image in os.listdir(imgPath):
     labels.append(image.split(".")[0])
     l.log("extracting features...")
     st = time.time()
-    vectors.append(FeatureExtractor(img, window_stride={"h": 1, "w": 1}).get_features())
+    vectors.append(FeatureExtractor(img).get_features())
     en = time.time()
     l.log(f"done, took {en - st}")
 
