@@ -1,0 +1,3 @@
+[submodule "third-party/e2eEmbed"]
+	path = third-party/e2eEmbed
+	url = https://github.com/jerinphilip/e2eEmbed.git
