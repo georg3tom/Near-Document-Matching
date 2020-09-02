@@ -12,10 +12,9 @@ from .surf import surf
 
 features = [
     black,
-    histogram,
+    # histogram,
     stats,
-    edge,
-    stats,
+    # edge,
 ]
 
 experimental_features = [
