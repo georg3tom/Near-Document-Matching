@@ -3,7 +3,7 @@ Makes changes to an image
 """
 
 from copy import deepcopy
-from random import randint
+from random import randint, random
 import os
 
 import numpy as np
@@ -67,6 +67,41 @@ class Alter:
         )
 
         self.edits.append(f"scale:{fx}x{fy}")
+        return self
+
+    def saltAndPepper(self, prob = 0.08):
+        """
+        Adds salt and pepper noise to the image 
+        """
+        self.salt(prob)
+        self.pepper(prob)
+
+        return self
+
+    def salt(self, prob = 0.08):
+        """
+        Adds salt noise to the image 
+        """
+        h, w, c = self.img.shape
+        for i in range(h):
+            for j in range(w):
+                if random() < prob:
+                    self.img[i,j] = 255
+
+        self.edits.append(f"salt")
+        return self
+
+    def pepper(self, prob = 0.08):
+        """
+        Adds pepper noise to the image 
+        """
+        h, w, c = self.img.shape
+        for i in range(h):
+            for j in range(w):
+                if random() < prob:
+                    self.img[i,j] = 0
+
+        self.edits.append(f"pepper")
         return self
 
     def affine_trans(self):
@@ -161,3 +196,4 @@ class Alter:
 
 if __name__ == "__main__":
     Alter("./inp.jpg").rotate(25).overlay().scale().affine_trans().write()
+    Alter("./inp.jpg").saltAndPepper().write()
