@@ -12,14 +12,13 @@ from .surf import surf
 
 features = [
     black,
-    histogram,
+    # histogram,
     stats,
+    # edge,
 ]
 
 experimental_features = [
-    edge,
-    hog,  # hog returns HUGE number of features, have to use it wisely
     sift,
-    stats,
     surf,
+    hog,  # hog returns HUGE number of features, have to use it wisely
 ]

@@ -16,17 +16,39 @@ class LSHIndex:
 
     def build(self, num_bits=8):
         self.index = faiss.IndexLSH(self.dimension, num_bits)
+        if not self.index.is_trained:
+            self.index.tran(data)
         self.index.add(self.vectors)
 
-    def query(self, vectors, k=10):
+    def query(self, vectors, k=6):
         k = int(min(k, self.labels.shape[0]))
         vectors = vectors.astype("float32")
         distances, indices = self.index.search(vectors, k)
-        return self.labels[np.array(indices)]
+        return distances, self.labels[np.array(indices)]
 
-    def write(self, indexName, labelName):
+    def score(self, vectors, labels, k=3):
+        _, pred = self.query(vectors)
+        pred = np.char.split(pred, sep='-')
+        labels = np.char.split(labels, sep='-')
+        acc = 0
+        for i in range(pred.shape[0]):
+            x = 0
+            for j in range(k):
+                if pred[i][j][0].split('.')[0] == labels[i][0].split('.')[0]:
+                    x += 1
+            x /= k
+            acc += x
+        acc /= pred.shape[0]
+        return acc
+
+    def write(self, indexName='./index', labelName='./labels'):
         faiss.write_index(self.index, indexName)
-        np.tofile(self.labels,labelName)
+        self.labels.tofile(labelName)
+
+    def load_index(self, indexName='./index'):
+        self.index = self.read_index(indexName)
+
+
 
 if __name__ == "__main__":
     d = 64
