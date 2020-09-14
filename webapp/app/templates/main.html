@@ -1,3 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    function submit() {
+        var filename = $("#iname").val();
+        var image = "<img src=\"/static/image/".concat(filename, "\" height=\"100px\" width=\"100px\">");
+        $("#imgdiv").empty().append("<br/>").append(image);
+    }
+</script>
+<div id="div" class="content">
+    <input id="iname" type="text" name="iname">
+    <button id="submit" onclick=submit()>Submit</button>
+    <div id="imgdiv"></div>
+</div>
+
 {% endblock content%}
