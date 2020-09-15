@@ -5,11 +5,27 @@
 <script type="text/javascript">
     function submit() {
         var filename = $("#iname").val();
-        var image = "<img src=\"/static/image/".concat(filename, "\" height=\"100px\" width=\"100px\">");
-        $("#imgdiv").empty().append("<br/>").append(image);
+        if(filename){
+            $.ajax({
+                data: {
+                    filename : filename,
+                },
+                type : 'POST',
+                url : '/search'
+            })
+            .done(function(data){
+                $("#imgdiv").empty();
+                for(var i in data.images){
+                    var image = "<img src=\"/static/image/".concat(data.images[i], "\" height=\"100px\" width=\"100px\">");
+                    $("#imgdiv").append("<br/><br/>").append(image);
+                }
+            });
+            event.preventDefault();
+        }
     }
 </script>
 <div id="div" class="content">
+    <p>Put the image to be queried in static/image folder and type the filename of the image</p>
     <input id="iname" type="text" name="iname">
     <button id="submit" onclick=submit()>Submit</button>
     <div id="imgdiv"></div>
