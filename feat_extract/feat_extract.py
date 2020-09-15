@@ -25,8 +25,8 @@ class FeatureExtractor:
         final_size=(300, 300),
         preprocess_config={"do_scale": True, "do_fix_channels": True},
         preprocess_enabled=True,
-        window_size={"h": 4, "w": 4},
-        window_stride={"h": 4, "w": 4},
+        window_size=(25, 25),
+        window_stride=(25, 25),
     ):
         self.img = img
         self.window_size = window_size
@@ -51,7 +51,7 @@ class FeatureExtractor:
             self.log(f"Resized image to {self.img.shape}")
 
         if do_fix_channels:
-            self.log(f"Checking and fixing channels")
+            self.log("Checking and fixing channels")
             if len(self.img.shape) == 2:
                 # got a grayscale image
                 self.img = cv2.cvtColor(self.img, cv2.COLOR_GRAY2BGR)
@@ -81,11 +81,11 @@ class FeatureExtractor:
 
         h, w = self.img.shape[:2]
 
-        for i in range(0, h - self.window_size["h"], self.window_stride["h"]):
-            for j in range(0, w - self.window_size["w"], self.window_stride["w"]):
+        for i in range(0, h - self.window_size[0], self.window_stride[0]):
+            for j in range(0, w - self.window_size[1], self.window_stride[1]):
                 blocks.append(
                     self.img[
-                        i : i + self.window_size["h"], j : j + self.window_size["w"], :
+                        i : i + self.window_size[0], j : j + self.window_size[1], :
                     ]
                 )
 
