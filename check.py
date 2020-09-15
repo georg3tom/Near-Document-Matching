@@ -21,8 +21,8 @@ features = []
 features.append(FeatureExtractor(img).get_features())
 features = np.array(features)
 features = features.astype("float32")
-labels = np.fromfile('./labels', dtype='<U36')
+labels = np.fromfile("./labels", dtype="<U36")
 
-index = faiss.read_index('./index')
+index = faiss.read_index("./index")
 distances, indices = index.search(features, neigh)
 print(labels[np.array(indices)])
