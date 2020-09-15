@@ -45,9 +45,10 @@ class LSHIndex:
     def write(self, indexName='./index', labelName='./labels'):
         faiss.write_index(self.index, indexName)
         self.labels.tofile(labelName)
+        np.save('labels.npy', self.labels)
 
     def load_index(self, indexName='./index'):
-        self.index = self.read_index(indexName)
+        self.index = faiss.read_index(indexName)
 
 
 

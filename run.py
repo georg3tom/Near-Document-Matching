@@ -43,7 +43,7 @@ vectors = np.array(vectors)
 
 lsh = LSH(vectors, labels)
 lsh.build()
-# lsh.write("./index", "./labels")
+lsh.write("./index", "./labels")
 
 dist, knns = lsh.query(vectors)
 print("lsh")
