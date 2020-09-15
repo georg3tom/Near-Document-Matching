@@ -9,7 +9,8 @@ import numpy as np
 from app import app
 
 sys.path.insert(
-    0, realpath(os.path.join(dirname(realpath(__file__)), "../../")),
+    0,
+    realpath(os.path.join(dirname(realpath(__file__)), "../../")),
 )
 
 from neigh_search import LSH
@@ -17,11 +18,11 @@ from feat_extract import FeatureExtractor
 
 # either use absolute path OR make sure that
 # they are relative to `app`
-labels_path = "./labels"
+labels_path = "./labels.npy"
 index_path = "./index"
 
 WEBAPP_CACHE = {}
-WEBAPP_LABELS = np.fromfile(labels_path, dtype="<U36")
+WEBAPP_LABELS = np.load(labels_path)
 WEBAPP_INDEX = faiss.read_index(index_path)
 
 
@@ -71,9 +72,9 @@ def search():
     print(f"Done!\nFeature shape: {features.shape}")
 
     print("Querying...")
-    _, indices = WEBAPP_INDEX.search(features, 1)
+    _, indices = WEBAPP_INDEX.search(features, 10)
     print("Done!")
-    ret = jsonify(images=WEBAPP_LABELS[np.array(indices)])
+    ret = jsonify(images=list(WEBAPP_LABELS[np.array(indices)][0]))
     WEBAPP_CACHE[fname] = ret
 
     return ret

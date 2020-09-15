@@ -29,27 +29,25 @@ class LSHIndex:
     def score(self, vectors, labels, k=4):
         _, pred = self.query(vectors)
         k = min(k, pred.shape[0])
-        pred = np.char.split(pred, sep='-')
-        labels = np.char.split(labels, sep='-')
+        pred = np.char.split(pred, sep="-")
+        labels = np.char.split(labels, sep="-")
         acc = 0
         for i in range(pred.shape[0]):
             x = 0
             for j in range(k):
-                if pred[i][j][0].split('.')[0] == labels[i][0].split('.')[0]:
+                if pred[i][j][0].split(".")[0] == labels[i][0].split(".")[0]:
                     x += 1
             x /= k
             acc += x
         acc /= pred.shape[0]
         return acc
 
-    def write(self, indexName='./index', labelName='./labels'):
+    def write(self, indexName="./index", labelName="./labels"):
         faiss.write_index(self.index, indexName)
-        self.labels.tofile(labelName)
-        np.save('labels.npy', self.labels)
+        np.save(labelName, self.labels)
 
-    def load_index(self, indexName='./index'):
+    def load_index(self, indexName="./index"):
         self.index = faiss.read_index(indexName)
-
 
 
 if __name__ == "__main__":
