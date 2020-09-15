@@ -25,8 +25,9 @@ class ExactIndex:
         distances, indices = self.index.search(vectors, k)
         return distances, self.labels[np.array(indices)]
 
-    def score(self, vectors, labels, k=3):
+    def score(self, vectors, labels, k=6):
         _, pred = self.query(vectors)
+        k = min(k, pred.shape[0])
         pred = np.char.split(pred, sep='-')
         labels = np.char.split(labels, sep='-')
         acc = 0
