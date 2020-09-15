@@ -2,11 +2,10 @@ from flask import render_template, url_for, request, jsonify
 from app import app
 
 import os
-
 import cv2
 import numpy as np
+import faiss
 
-from app.neigh_search import LSH, L2
 from app.feat_extract import FeatureExtractor
 
 @app.route('/')
@@ -21,35 +20,24 @@ def query():
 def search():
     fname = request.form['filename']
     try:
-        labels = []
-        vectors = []
         query = []
         imgPath = './app/static/image/'
-        images = os.listdir(imgPath)
-        if fname not in images:
+        if fname not in os.listdir(imgPath):
             return jsonify({'images': []})
-        total = len(images)
-        for i, image in enumerate(images):
-            filename = imgPath + image
-            img = cv2.imread(filename)
-            labels.append(image)
-            feat = FeatureExtractor(img, window_size={"h": 25, "w": 25}, window_stride={"h": 25, "w": 25}).get_features()
-            vectors.append(feat)
-            if image == fname:
-                query.append(feat)
+        filename = imgPath + fname
+        img = cv2.imread(filename)
+        feat = FeatureExtractor(img, window_size={"h": 25, "w": 25}, window_stride={"h": 25, "w": 25}).get_features()
+        query.append(feat)
 
-        labels = np.array(labels)
-        vectors = np.array(vectors)
-        query = np.array(query)
-
-        lsh = LSH(vectors, labels)
-        lsh.build()
-        dist, knns = lsh.query(query)
-
-        # l2 = L2(vectors, labels)
-        # l2.build()
-        # dist, knns = l2.query(vectors)
-        return jsonify({'images': list(knns[0])})
+        index = faiss.read_index('./app/static/index')
+        labels = np.load('./app/static/labels.npy')
+        k = min(6, labels.shape[0])
+        query = np.array(query).astype("float32")
+        _, indices = index.search(query, k)
+        images = list(labels[np.array(indices)[0]])
+        for i in range(k):
+            images[i] = str(images[i]) + '.png'
+        return jsonify({'images': images})
 
     except:
         print('error')
