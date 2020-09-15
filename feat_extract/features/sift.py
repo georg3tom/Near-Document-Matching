@@ -9,7 +9,6 @@ import numpy as np
 def sift(img):
     """
     Returns the sift descriptors of image 
-    Expects an RGB image (3 channels)
     """
 
     sift = cv2.xfeatures2d.SIFT_create()

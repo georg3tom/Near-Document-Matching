@@ -9,7 +9,6 @@ import numpy as np
 def stats(img):
     """
     Returns the common stats like mean, variance, etc per channel
-    Expects an RGB image (3 channels)
     """
     # fail on grayscale images
     assert len(img.shape) == 3

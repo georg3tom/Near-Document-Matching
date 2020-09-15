@@ -4,18 +4,13 @@ Returns the no of black pixels
 
 import cv2
 import numpy as np
-from .histogram import histogram
 
 
-def black(img):
+def black(img, black_thresh=10):
     """
-    Returns the number of black pixels 
-    Expects an RGB image (3 channels)
+    Returns the number of black pixels
     """
-    rang = 10
-    hist = histogram(img)
-
-    return np.array([int(np.sum(hist[:rang, :]))])
+    return np.array(np.count_nonzero(img <= black_thresh))
 
 
 if __name__ == "__main__":

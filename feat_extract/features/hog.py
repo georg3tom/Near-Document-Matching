@@ -10,7 +10,6 @@ def hog(img):
     """
     Returns the HOG descriptors for an image
     a HUGE return, have to use wisely
-    Expects an RGB image (3 channels)
     """
 
     return cv2.HOGDescriptor().compute(img)

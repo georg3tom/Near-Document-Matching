@@ -9,9 +9,7 @@ import numpy as np
 def edge(img):
     """
     Returns the canny edges detected in the image
-    Expects an RGB image (3 channels)
     """
-
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     return cv2.Canny(img, 100, 200)
