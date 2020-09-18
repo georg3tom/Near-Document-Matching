@@ -29,8 +29,8 @@ class LSHIndex:
     def score(self, vectors, labels, k=4):
         _, pred = self.query(vectors)
         k = min(k, pred.shape[0])
-        pred = np.char.split(pred, sep="-")
-        labels = np.char.split(labels, sep="-")
+        pred = np.char.split(pred, sep="_")
+        labels = np.char.split(labels, sep="_")
         acc = 0
         for i in range(pred.shape[0]):
             x = 0
