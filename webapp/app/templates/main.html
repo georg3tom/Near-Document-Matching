@@ -17,7 +17,7 @@
                 $("#imgdiv").empty();
                 for(var i in data.images){
                     var image = "<img src=\"/static/image/".concat(data.images[i] + ".png", "\" height=\"100px\" width=\"100px\">");
-                    $("#imgdiv").append("<br/><br/>").append(image);
+                    $("#imgdiv").append("<br/><br/>").append(image).append("<p>" + data.images[i] + "</p>");
                 }
             });
             event.preventDefault();
