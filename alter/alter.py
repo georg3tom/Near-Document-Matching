@@ -176,7 +176,7 @@ class Alter:
         Writes the image to disk
         """
         if name is None:
-            name = "-".join(self.edits)
+            name = "_".join(self.edits)
         if directory is not None:
             name = os.path.join(directory, name)
         if ext is None:

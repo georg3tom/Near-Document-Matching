@@ -21,5 +21,5 @@ if __name__ == "__main__":
         altr = Alter(join(src, f))
         altr.pepper().write(directory=out)
 
-        altr = Alter(join(src, f))
-        altr.saltAndPepper().write(directory=out)
+        # altr = Alter(join(src, f))
+        # altr.saltAndPepper().write(directory=out)
