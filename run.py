@@ -15,7 +15,7 @@ imgPath = "./data/"
 
 l = Logger()
 
-images = os.listdir(imgPath)
+images = [f for f in os.listdir(imgPath) if os.path.isfile(os.path.join(imgPath, f))]
 total = len(images)
 time_taken = 0
 
@@ -42,13 +42,13 @@ labels = np.array(labels)
 vectors = np.array(vectors)
 
 lsh = LSH(vectors, labels)
-lsh.build()
+lsh.build(num_bits=32)
 lsh.write("./index", "./labels")
 
 dist, knns = lsh.query(vectors)
 print("lsh")
-print("distance:", dist)
-print("labels:", knns)
+print("distance:", dist[:5])
+print("labels:", knns[:5])
 print("accuracy:", lsh.score(vectors, labels))
 
 l2 = L2(vectors, labels)
@@ -56,6 +56,6 @@ l2.build()
 
 dist, knns = l2.query(vectors)
 print("l2")
-print("distance:", dist)
-print("labels:", knns)
+print("distance:", dist[:5])
+print("labels:", knns[:5])
 print("accuracy: ", l2.score(vectors, labels))
