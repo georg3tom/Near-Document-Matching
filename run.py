@@ -11,7 +11,7 @@ from helpers import Logger
 
 labels = []
 vectors = []
-imgPath = "./data/"
+imgPath = "./data_gen/output/"
 
 l = Logger()
 
@@ -23,11 +23,11 @@ for i, image in enumerate(images):
     l.log("\033[2J\033[0;0H")
     l.log(f"Image {i+1} of {total}")
 
-    filename = imgPath + image
+    filename = os.path.join(imgPath, image)
 
     l.log(f"reading {filename}")
     img = cv2.imread(filename)
-    labels.append(image.split(".")[0])
+    labels.append(image)
 
     l.log("extracting features...")
     st = time.time()

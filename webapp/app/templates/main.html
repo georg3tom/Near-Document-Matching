@@ -2,33 +2,36 @@
 {% block content %}
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script type="text/javascript">
-    function submit() {
-        var filename = $("#iname").val();
-        if(filename){
-            $.ajax({
-                data: {
-                    filename : filename,
-                },
-                type : 'POST',
-                url : '/search'
-            })
-            .done(function(data){
-                $("#imgdiv").empty();
-                for(var i in data.images){
-                    var image = "<img src=\"/static/image/".concat(data.images[i] + ".png", "\" height=\"100px\" width=\"100px\">");
-                    $("#imgdiv").append("<br/><br/>").append(image).append("<p>" + data.images[i] + "</p>");
-                }
-            });
-            event.preventDefault();
-        }
-    }
-</script>
-<div id="div" class="content">
-    <p>Put the image to be queried in static/image folder and type the filename of the image</p>
-    <input id="iname" type="text" name="iname">
-    <button id="submit" onclick=submit()>Submit</button>
-    <div id="imgdiv"></div>
+<script src="/static/js/query.js" charset="utf-8"></script>
+<div class="container">
+
+    <div class="col-xl-6 m-4">
+        <div class="card">
+            <div class="card-body ht-tm-superspecialcardcheat">
+
+                <h6 class="card-title">Put the image to be queried in static/image folder and type the filename of the image</h6>
+
+                <div class="ht-tm-codeblock ht-tm-btn-replaceable">
+                    <div class="form-inline ht-tm-element">
+                        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                            <input type="text" class="form-control" id="iname" placeholder="Filename">
+                        </div>
+
+                        <button class="btn btn-primary" onclick=submit() >Submit</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+<div class="jumbotron">
+    <h1 class="display-3">Output</h1>
+    <div id="imgdiv" class="jumbotron">
+
+    </div>
+</div>
+
 </div>
 
 {% endblock content%}
