@@ -79,7 +79,7 @@ class Alter:
                 if random() < prob:
                     self.img[i, j] = 255
 
-        self.edits.append(f"salt")
+        self.edits.append(f"salt:{prob}")
         return self
 
     def pepper(self, prob=0.08):
@@ -92,17 +92,32 @@ class Alter:
                 if random() < prob:
                     self.img[i, j] = 0
 
-        self.edits.append(f"pepper")
+        self.edits.append(f"pepper:{prob}")
         return self
 
     def affine_trans(self):
         """
         Applies some affine transformation to the image
         """
-        h, w, c = self.img.shape
+        h, w, _ = self.img.shape
 
-        # pts1 = np.float32([[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)]])
-        # pts2 = np.float32([[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)],[randint(0,rows),randint(0,cols)]])
+        """
+        pts1 = np.float32(
+            [
+                [randint(0, rows), randint(0, cols)],
+                [randint(0, rows), randint(0, cols)],
+                [randint(0, rows), randint(0, cols)],
+            ]
+        )
+        pts2 = np.float32(
+            [
+                [randint(0, rows), randint(0, cols)],
+                [randint(0, rows), randint(0, cols)],
+                [randint(0, rows), randint(0, cols)],
+            ]
+        )
+        """
+
         pts1 = np.float32([[50, 50], [200, 50], [50, 200]])
         pts2 = np.float32([[10, 100], [200, 50], [100, 250]])
 
@@ -175,14 +190,16 @@ class Alter:
         """
         Writes the image to disk
         """
+        delim = "_"
         if name is None:
-            name = "_".join(self.edits)
+            # extra delimeter added to separate edits from the extension
+            name = delim.join(self.edits) + delim
         if directory is not None:
             name = os.path.join(directory, name)
         if ext is None:
             ext = self.ext
 
-        cv2.imwrite(name + ext, self.img)
+        return cv2.imwrite(name + ext, self.img)
 
 
 if __name__ == "__main__":
