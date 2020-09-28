@@ -22,7 +22,7 @@ class FeatureExtractor:
     def __init__(
         self,
         img,
-        final_size=(300, 300),
+        final_size=(300, 500),
         preprocess_config={"do_scale": True, "do_fix_channels": True},
         preprocess_enabled=True,
         window_size=(25, 25),
