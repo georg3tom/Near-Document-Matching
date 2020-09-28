@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import time
 
-from neigh_search import LSH, L2
+from neigh_search import LSHIndex as LSH, L2ExactIndex as L2
 from feat_extract import FeatureExtractor
 
 from helpers import Logger
@@ -19,15 +19,15 @@ images = [f for f in os.listdir(imgPath) if os.path.isfile(os.path.join(imgPath,
 total = len(images)
 time_taken = 0
 
-for i, image in enumerate(images):
+for i, image_name in enumerate(images):
     l.log("\033[2J\033[0;0H")
     l.log(f"Image {i+1} of {total}")
 
-    filename = os.path.join(imgPath, image)
+    filename = os.path.join(imgPath, image_name)
 
     l.log(f"reading {filename}")
     img = cv2.imread(filename)
-    labels.append(image)
+    labels.append(image_name)
 
     l.log("extracting features...")
     st = time.time()
@@ -38,7 +38,7 @@ for i, image in enumerate(images):
     time_taken += en - st
     l.log(f"Total: {time_taken:.2}s")
 
-labels = np.array(labels)
+labels = np.array(labels)  # .astype(object)
 vectors = np.array(vectors)
 
 lsh = LSH(vectors, labels)

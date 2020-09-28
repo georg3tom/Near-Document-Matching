@@ -1,2 +1,2 @@
-from .lsh import LSHIndex as LSH
-from .l2 import ExactIndex as L2
+from .lsh import LSHIndex
+from .l2 import L2ExactIndex

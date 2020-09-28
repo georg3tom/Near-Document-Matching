@@ -7,14 +7,16 @@ import numpy as np
 import cv2
 
 
-class ExactIndex:
+class L2ExactIndex:
     def __init__(self, vectors, labels):
         self.dimension = vectors.shape[1]
         self.vectors = vectors.astype("float32")
         self.labels = labels
 
     def build(self):
-        self.index = faiss.IndexFlatL2(self.dimension,)
+        self.index = faiss.IndexFlatL2(
+            self.dimension,
+        )
         if not self.index.is_trained:
             self.index.tran(data)
         self.index.add(self.vectors)
@@ -28,24 +30,24 @@ class ExactIndex:
     def score(self, vectors, labels, k=3):
         _, pred = self.query(vectors)
         k = min(k, pred.shape[0])
-        pred = np.char.split(pred, sep='_')
-        labels = np.char.split(labels, sep='_')
+        pred = np.char.split(pred, sep="_")
+        labels = np.char.split(labels, sep="_")
         acc = 0
         for i in range(pred.shape[0]):
             x = 0
             for j in range(k):
-                if pred[i][j][0].split('.')[0] == labels[i][0].split('.')[0]:
+                if pred[i][j][0].split(".")[0] == labels[i][0].split(".")[0]:
                     x += 1
             x /= k
             acc += x
         acc /= pred.shape[0]
         return acc
 
-    def write(self, indexName='./index', labelName='./labels'):
+    def write(self, indexName="./index", labelName="./labels"):
         faiss.write_index(self.index, indexName)
         np.save(labelName, self.labels)
 
-    def load_index(self, indexName='./index'):
+    def load_index(self, indexName="./index"):
         self.index = self.read_index(indexName)
 
 
@@ -60,7 +62,7 @@ if __name__ == "__main__":
     xq = np.random.random((nq, d)).astype("float32")
     xq[:, 0] += np.arange(nq) / 1000.0
 
-    index = ExactIndex(xb, labels)
+    index = L2ExactIndex(xb, labels)
     index.build()
 
     print(index.query(xq[:1]))
