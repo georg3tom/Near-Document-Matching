@@ -1,4 +1,4 @@
 __pycache__
 index
 labels.npy
-data_gen/output
+data_gen/output/*.png
