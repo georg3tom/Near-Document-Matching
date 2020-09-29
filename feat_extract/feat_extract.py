@@ -44,10 +44,17 @@ class FeatureExtractor:
         """
         self.log(">> preprocess")
 
+        old_img_shape = self.img.shape
+
         if do_scale:
             self.img = cv2.resize(
                 self.img, self.final_size, interpolation=cv2.INTER_CUBIC
             )
+
+            # for some reason, resize compresses the 3rd dimension
+            if len(self.img.shape) != len(old_img_shape):
+                self.img = np.reshape(self.img, (*self.img.shape, 1))
+
             self.log(f"Resized image to {self.img.shape}")
 
         if do_fix_channels:

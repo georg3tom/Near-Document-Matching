@@ -26,12 +26,19 @@ for i, image_name in enumerate(images):
     filename = os.path.join(imgPath, image_name)
 
     l.log(f"reading {filename}")
-    img = cv2.imread(filename)
+
+    img = cv2.imread(filename, 0)
+    img = np.reshape(img, (*img.shape, 1))
+
     labels.append(image_name)
 
     l.log("extracting features...")
     st = time.time()
-    vectors.append(FeatureExtractor(img).get_features())
+    vectors.append(
+        FeatureExtractor(
+            img, preprocess_config={"do_fix_channels": False}
+        ).get_features()
+    )
     en = time.time()
 
     l.log(f"done, took {en - st:.2}s")

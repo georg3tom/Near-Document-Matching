@@ -12,8 +12,8 @@ from .surf import surf
 
 features = [
     black,
-    # histogram,
-    stats,
+    histogram,
+    # stats,
     # edge,
 ]
 
