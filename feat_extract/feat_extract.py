@@ -109,18 +109,27 @@ class FeatureExtractor:
         self.log(f"Image broken into {len(blocks)} blocks")
         self.log()
 
-        feature_vector = []
+        # feature_vector = []
 
-        for b, block in enumerate(blocks):
-            self.log(f"\033[FBlock {b}")
-            for feature in features:
-                self.log(f"> {feature.__name__}" + " " * 10, end="\r")
-                f = feature(block)
-                if f is not None:
-                    feature_vector.append(f.ravel())
+        # for b, block in enumerate(blocks):
+        #     self.log(f"\033[FBlock {b}")
+        #     for feature in features:
+        #         self.log(f"> {feature.__name__}" + " " * 10, end="\r")
+        #         f = feature(block)
+        #         if f is not None:
+        #             feature_vector.append(f.ravel())
+
+        blocks = np.array(blocks)
+
+        feature_vector = np.array([]).reshape((blocks.shape[0], 0))
+
+        for feature in features:
+            self.log(f"> {feature.__name__}" + " " * 10, end="\r")
+            feature_vector = np.append(feature_vector, feature(blocks), axis=-1)
 
         self.log("\n<< get_features")
-        return np.hstack(feature_vector)
+        # return np.hstack(feature_vector)
+        return feature_vector.ravel()
 
     @staticmethod
     def log(*args, **kwargs):
