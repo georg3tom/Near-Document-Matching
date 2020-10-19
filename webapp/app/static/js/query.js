@@ -1,4 +1,5 @@
 function showIMG(data) {
+    console.log(data);
     $("#imgdiv").empty();
     var main = document.getElementById("imgdiv");
 
@@ -12,7 +13,7 @@ function showIMG(data) {
         }
 
         var image = " <img src=\"/static/image/".concat(data.images[i], "\" height=\"500px\" width=\"250px\"> ");
-        var col = '<div class="column m-4"/> ' + image + "<br> <p>" + data.images[i] + "</p>" +' <div/>'
+        var col = '<div class="column m-4"/> ' + image + "<br> <p>" + data.images[i] + "  <br/> dist:" + data.distances[i] + "</p>" +' <div/>'
         row.innerHTML = row.innerHTML +  col;
     }
 
@@ -42,7 +43,6 @@ function submit2() {
     $.each(jQuery('#fileupload')[0].files, function(i, file) {
         data.append('file-'+i, file);
     });
-    console.log(data);
     jQuery.ajax({
         url: '/searchUpload',
         data: data,

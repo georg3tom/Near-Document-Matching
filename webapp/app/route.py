@@ -15,7 +15,7 @@ sys.path.insert(
     realpath(os.path.join(dirname(realpath(__file__)), "../../")),
 )
 
-from neigh_search import LSH
+from neigh_search import LSHIndex as LSH
 from feat_extract import FeatureExtractor
 
 # either use absolute path OR make sure that
@@ -55,7 +55,7 @@ def search():
         print("Error, couldn't locate file")
         return jsonify(images={})
 
-    img = cv2.imread(filepath)
+    img = cv2.imread(filepath,0)
     if img is None:
         print("Error, couldn't open file")
         return jsonify(images={})
@@ -70,13 +70,16 @@ def search():
 
     print("Couldn't find image in cache")
     print("Calculating features...")
-    features = np.array([FeatureExtractor(img).get_features()], dtype=np.float32)
+    img = np.reshape(img, (*img.shape, 1))
+    features = np.array([FeatureExtractor(
+            img, preprocess_config={"do_fix_channels": False}
+        ).get_features()], dtype=np.float32)
     print(f"Done!\nFeature shape: {features.shape}")
 
     print("Querying...")
-    _, indices = WEBAPP_INDEX.search(features, 10)
+    distances, indices = WEBAPP_INDEX.search(features, 10)
     print("Done!")
-    ret = jsonify(images=list(WEBAPP_LABELS[np.array(indices)][0]))
+    ret = jsonify(images=list(WEBAPP_LABELS[np.array(indices)][0]),distances=distances[0].tolist()) 
     WEBAPP_CACHE[fname] = ret
 
     return ret
@@ -90,7 +93,7 @@ def searchUpload():
     f = request.files["file-0"]
 
     img = Image.open(io.BytesIO(f.stream.read()))
-    img = cv2.cvtColor(np.float32(img), cv2.COLOR_RGB2BGR)
+    img = cv2.cvtColor(np.float32(img), cv2.COLOR_RGB2GRAY)
 
     if img is None:
         print("Error, couldn't open file")
@@ -99,12 +102,14 @@ def searchUpload():
     print(f"Received file. Dimen: {img.shape}")
 
     print("Calculating features...")
-    features = np.array([FeatureExtractor(img).get_features()], dtype=np.float32)
+    img = np.reshape(img, (*img.shape, 1))
+    features = np.array([FeatureExtractor(
+            img, preprocess_config={"do_fix_channels": False}
+        ).get_features()], dtype=np.float32)
     print(f"Done!\nFeature shape: {features.shape}")
 
     print("Querying...")
-    _, indices = WEBAPP_INDEX.search(features, 10)
+    distances, indices = WEBAPP_INDEX.search(features, 10)
     print("Done!")
-    ret = jsonify(images=list(WEBAPP_LABELS[np.array(indices)][0]))
-
+    ret = jsonify(images=list(WEBAPP_LABELS[np.array(indices)][0]),distances=distances[0].tolist()) 
     return ret
